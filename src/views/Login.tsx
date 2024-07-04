@@ -29,6 +29,8 @@ import type { InferInput } from 'valibot'
 import classnames from 'classnames'
 
 // Type Imports
+import Cookies from 'js-cookie'
+
 import type { SystemMode } from '@core/types'
 import type { Locale } from '@/configs/i18n'
 
@@ -45,6 +47,8 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+import { SignIn } from '@/services/apis/user.api'
+import Config from '@/@core/configs'
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -70,10 +74,6 @@ const MaskImg = styled('img')({
   zIndex: -1
 })
 
-type ErrorType = {
-  message: string[]
-}
-
 type FormData = InferInput<typeof schema>
 
 const schema = object({
@@ -88,7 +88,7 @@ const schema = object({
 const Login = ({ mode }: { mode: SystemMode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
-  const [errorState, setErrorState] = useState<ErrorType | null>(null)
+  const [errorState, setErrorState] = useState<any>(null)
 
   // Vars
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -114,8 +114,8 @@ const Login = ({ mode }: { mode: SystemMode }) => {
   } = useForm<FormData>({
     resolver: valibotResolver(schema),
     defaultValues: {
-      email: 'admin@vuexy.com',
-      password: 'admin'
+      email: 'string@gmail.com',
+      password: 'test1'
     }
   })
 
@@ -130,24 +130,20 @@ const Login = ({ mode }: { mode: SystemMode }) => {
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-    const res = await signIn('credentials', {
+    await SignIn({
       email: data.email,
-      password: data.password,
-      redirect: false
-    })
+      password: data.password
+    }).then((res) => {
+      const token = res.data.session;
+      const accessTokenKey = Config.Env.NEXT_PUBLIC_X_ACCESS_TOKEN as string;
 
-    if (res && res.ok && res.error === null) {
-      // Vars
+      Cookies.set(accessTokenKey, token);
       const redirectURL = searchParams.get('redirectTo') ?? '/'
 
       router.replace(getLocalizedUrl(redirectURL, locale as Locale))
-    } else {
-      if (res?.error) {
-        const error = JSON.parse(res.error)
-
-        setErrorState(error)
-      }
-    }
+    }).catch(() => {
+      setErrorState('Wrong email or password')
+    });
   }
 
   return (
@@ -181,7 +177,7 @@ const Login = ({ mode }: { mode: SystemMode }) => {
           <form
             noValidate
             autoComplete='off'
-            action={() => {}}
+            action={() => { }}
             onSubmit={handleSubmit(onSubmit)}
             className='flex flex-col gap-6'
           >
@@ -203,7 +199,7 @@ const Login = ({ mode }: { mode: SystemMode }) => {
                   }}
                   {...((errors.email || errorState !== null) && {
                     error: true,
-                    helperText: errors?.email?.message || errorState?.message[0]
+                    helperText: errors?.email?.message || errorState
                   })}
                 />
               )}

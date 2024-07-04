@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
 // MUI Imports
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -16,7 +16,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Divider from '@mui/material/Divider'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -35,6 +34,7 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+import { SignUp } from '@/services/apis/user.api'
 
 // Styled Custom Components
 const RegisterIllustration = styled('img')(({ theme }) => ({
@@ -63,6 +63,7 @@ const MaskImg = styled('img')({
 const Register = ({ mode }: { mode: SystemMode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const router = useRouter();
 
   // Vars
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -89,6 +90,31 @@ const Register = ({ mode }: { mode: SystemMode }) => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
+  const createInvoice = (formData: FormData) => {
+
+    const rawFormData = {
+      username: formData.get('username'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+    }
+
+    SignUp(rawFormData).then(() => {
+
+      router.push('/login')
+    }).catch((err) => {
+      console.log("🚀 ~ SignUp ~ err:", err)
+    });
+
+    // mutate data
+    // revalidate cache
+  }
+
+  const [policy, setPolicy] = useState(true);
+
+  const handleChange = () => {
+    setPolicy(!policy);
+  }
+
   return (
     <div className='flex bs-full justify-center'>
       <div
@@ -114,11 +140,12 @@ const Register = ({ mode }: { mode: SystemMode }) => {
             <Typography variant='h4'>Adventure starts here 🚀</Typography>
             <Typography>Make your app management easy and fun!</Typography>
           </div>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()} className='flex flex-col gap-6'>
-            <CustomTextField autoFocus fullWidth label='Username' placeholder='Enter your username' />
-            <CustomTextField fullWidth label='Email' placeholder='Enter your email' />
+          <form noValidate autoComplete='off' action={createInvoice} className='flex flex-col gap-6'>
+            <CustomTextField autoFocus fullWidth name='username' label='Username' placeholder='Enter your username' />
+            <CustomTextField fullWidth name='email' label='Email' placeholder='Enter your email' />
             <CustomTextField
               fullWidth
+              name='password'
               label='Password'
               placeholder='············'
               type={isPasswordShown ? 'text' : 'password'}
@@ -133,7 +160,7 @@ const Register = ({ mode }: { mode: SystemMode }) => {
               }}
             />
             <FormControlLabel
-              control={<Checkbox />}
+              control={<Checkbox onClick={() => handleChange()} />}
               label={
                 <>
                   <span>I agree to </span>
@@ -143,7 +170,7 @@ const Register = ({ mode }: { mode: SystemMode }) => {
                 </>
               }
             />
-            <Button fullWidth variant='contained' type='submit'>
+            <Button disabled={policy} fullWidth variant='contained' type='submit'>
               Sign Up
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
@@ -152,7 +179,7 @@ const Register = ({ mode }: { mode: SystemMode }) => {
                 Sign in instead
               </Typography>
             </div>
-            <Divider className='gap-2'>or</Divider>
+            {/* <Divider className='gap-2'>or</Divider>
             <div className='flex justify-center items-center gap-1.5'>
               <IconButton className='text-facebook' size='small'>
                 <i className='tabler-brand-facebook-filled' />
@@ -166,7 +193,7 @@ const Register = ({ mode }: { mode: SystemMode }) => {
               <IconButton className='text-error' size='small'>
                 <i className='tabler-brand-google-filled' />
               </IconButton>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>
