@@ -43,7 +43,7 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /home/project/public ./public
+COPY --from=builder /home/FE/vuexy_fe/public ./public
 
 # Set the correct permission for prerender cache
 RUN mkdir .next
