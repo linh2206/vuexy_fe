@@ -36,7 +36,6 @@ const Layout = async ({ children, params }: ChildrenType & { params: { lang: Loc
 
   return (
     <Providers direction={direction}>
-      {/* <AuthGuard locale={params.lang}> */}
       <LayoutWrapper
         systemMode={systemMode}
         verticalLayout={
@@ -63,7 +62,6 @@ const Layout = async ({ children, params }: ChildrenType & { params: { lang: Loc
         </Button>
       </ScrollToTop>
       <Customizer dir={direction} />
-      {/* </AuthGuard> */}
     </Providers>
   )
 }
