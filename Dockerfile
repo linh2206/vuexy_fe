@@ -27,7 +27,7 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 RUN yarn build:icons
-COPY --from=deps /home/project/src/assets/iconify-icons/generated-icons.css ./src/assets/iconify-icons/generated-icons.css
+COPY --from=deps /home/project/src/assets/iconify-icons ./src/assets/iconify-icons
 COPY . .
 RUN yarn build
 
