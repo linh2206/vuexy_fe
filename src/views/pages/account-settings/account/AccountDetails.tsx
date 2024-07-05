@@ -2,7 +2,6 @@
 
 // React Imports
 import { useEffect, useState } from 'react'
-import type { ChangeEvent } from 'react'
 
 // MUI Imports
 import Grid from '@mui/material/Grid'
@@ -15,11 +14,13 @@ import Chip from '@mui/material/Chip'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
 // Component Imports
-import Alert from '@mui/material/Alert';
+
+import { toast, Bounce } from 'react-toastify'
 
 import CustomTextField from '@core/components/mui/TextField'
 import { Profile } from '@/services/swr/profile.swr'
-import { UpdateProfile } from '@/services/apis/user.api'
+import { UpdateProfile, UploadAvatar } from '@/services/apis/user.api'
+import 'react-toastify/dist/ReactToastify.css';
 
 
 type Data = {
@@ -58,12 +59,8 @@ const languageData = ['English', 'Arabic', 'French', 'German', 'Portuguese']
 const AccountDetails = () => {
   // States
   const [formData, setFormData] = useState<any>({})
-
-  console.log("🚀 ~ AccountDetails ~ formData:", formData)
   const [fileInput, setFileInput] = useState<string>('')
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
-
-  console.log("🚀 ~ AccountDetails ~ imgSrc:", imgSrc)
+  const [imgSrc, setImgSrc] = useState<string>('')
   const [language, setLanguage] = useState<string[]>(['English'])
 
   const handleDelete = (value: string) => {
@@ -78,7 +75,10 @@ const AccountDetails = () => {
     setFormData({ ...formData, [field]: value })
   }
 
-  const handleFileInputChange = (file: ChangeEvent) => {
+  const [file, setFile] = useState<any>()
+
+  const handleFileInputChange = (file: any) => {
+    setFile(file.target.files[0]);
     const reader = new FileReader()
     const { files } = file.target as HTMLInputElement
 
@@ -94,7 +94,6 @@ const AccountDetails = () => {
 
   const handleFileInputReset = () => {
     setFileInput('')
-    setImgSrc('/images/avatars/1.png')
   }
 
 
@@ -105,43 +104,57 @@ const AccountDetails = () => {
   }, [data]);
 
   const updateProfile = (formData: FormData) => {
+    const formDataUpload = new FormData();
 
-    const rawFormData = {
-      firstName: formData.get('firstName'),
-      lastName: formData.get('lastName'),
-      organization: formData.get('organization'),
-      phone: formData.get('phone'),
-      email: formData.get('email'),
-      address: formData.get('address'),
-      state: formData.get('state'),
-      country: formData.get('country'),
-      zipCode: formData.get('zipCode'),
-      language: formData.get('language'),
+    formDataUpload.append('file', file);
+    UploadAvatar(formDataUpload).then((res) => {
+      const rawFormData = {
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        organization: formData.get('organization'),
+        phone: formData.get('phone'),
+        email: formData.get('email'),
+        address: formData.get('address'),
+        state: formData.get('state'),
+        country: formData.get('country'),
+        zipCode: formData.get('zipCode'),
+        language: formData.get('language'),
+        avatar: res.data.path,
+      }
 
-      // avatar: formData.get(""),
-    }
-
-    console.log("🚀 ~ updateProfile ~ rawFormData:", rawFormData)
-
-    UpdateProfile(rawFormData).then(() => {
-      return (
-        <Alert severity="success">
-          Edit that your action was successful.
-        </Alert>
-      )
-    }).catch((err) => {
-      console.log("🚀 ~ SignUp ~ err:", err)
-    });
+      UpdateProfile(rawFormData).then(() => {
+        toast.success('Edit profile success', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        })
+      }).catch((err) => {
+        toast.error((err?.response?.data?.message || ""), {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        })
+      });
+    })
   }
 
   return (
     <Card>
-      <Alert severity="success" style={{ marginBottom: "10px" }}>
-        Edit that your action was successful.
-      </Alert>
       <CardContent className='mbe-4'>
         <div className='flex max-sm:flex-col items-center gap-6'>
-          <img height={100} width={100} className='rounded' src={process.env.NEXT_PUBLIC_BE_URL + data?.data.avatar} alt='Profile' />
+          <img height={100} width={100} className='rounded' src={imgSrc ?? process.env.NEXT_PUBLIC_BE_URL + data?.data.avatar} alt='Profile' />
           <div className='flex flex-grow flex-col gap-4'>
             <div className='flex flex-col sm:flex-row gap-4'>
               <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>

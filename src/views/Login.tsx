@@ -17,7 +17,6 @@ import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
-import Alert from '@mui/material/Alert'
 
 // Third-party Imports
 import { Controller, useForm } from 'react-hook-form'
@@ -112,10 +111,6 @@ const Login = ({ mode }: { mode: SystemMode }) => {
     formState: { errors }
   } = useForm<FormData>({
     resolver: valibotResolver(schema),
-    defaultValues: {
-      email: 'string@gmail.com',
-      password: 'test1'
-    }
   })
 
   const characterIllustration = useImageVariant(
@@ -167,12 +162,12 @@ const Login = ({ mode }: { mode: SystemMode }) => {
             <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! 👋🏻`}</Typography>
             <Typography>Please sign-in to your account and start the adventure</Typography>
           </div>
-          <Alert icon={false} className='bg-[var(--mui-palette-primary-lightOpacity)]'>
+          {/* <Alert icon={false} className='bg-[var(--mui-palette-primary-lightOpacity)]'>
             <Typography variant='body2' color='primary'>
               Email: <span className='font-medium'>admin@vuexy.com</span> / Pass:{' '}
               <span className='font-medium'>admin</span>
             </Typography>
-          </Alert>
+          </Alert> */}
           <form
             noValidate
             autoComplete='off'

@@ -65,7 +65,6 @@ const callApi = (
   const baseUrl = Config.Env.NEXT_PUBLIC_BE_URL
   const url = baseUrl + endpoint
 
-  console.log('🚀 ~ url:', url)
   const responseType = isBlob ? 'blob' : 'json'
 
   return axios({
@@ -81,13 +80,11 @@ const callApi = (
     // withCredentials: true,
   })
     .then((res: any) => {
-      console.log('LOG ~ .then ~ res:', res.headers)
       if (res?.status !== 200 && res?.status !== 201) throw res
 
       return res?.data
     })
     .catch((err: any) => {
-      console.error('ERR ~ ', err)
       throw err
     })
 }

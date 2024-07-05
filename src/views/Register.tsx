@@ -21,6 +21,8 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import classnames from 'classnames'
 
 // Type Imports
+import { Bounce, toast } from 'react-toastify';
+
 import type { SystemMode } from '@core/types'
 import type { Locale } from '@configs/i18n'
 
@@ -35,6 +37,9 @@ import { useSettings } from '@core/hooks/useSettings'
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
 import { SignUp } from '@/services/apis/user.api'
+
+import 'react-toastify/dist/ReactToastify.css';
+
 
 // Styled Custom Components
 const RegisterIllustration = styled('img')(({ theme }) => ({
@@ -99,11 +104,32 @@ const Register = ({ mode }: { mode: SystemMode }) => {
     }
 
     SignUp(rawFormData).then(() => {
-
+      toast.success('Create user success', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      })
       router.push('/login')
     }).catch((err) => {
-      console.log("🚀 ~ SignUp ~ err:", err)
+      toast.error((err?.response?.data?.message || ""), {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      })
     });
+
   }
 
   const [policy, setPolicy] = useState(true);

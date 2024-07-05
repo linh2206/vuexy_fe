@@ -23,3 +23,15 @@ export const UpdateProfile = (body: any) => {
 
   return callApi(endpoint, 'PATCH', body)
 }
+
+export const UploadAvatar = (body: any) => {
+  const endpoint = `/media/upload`
+
+  return callApi(endpoint, 'POST', body)
+}
+
+export const ResetPassword = (body: any) => {
+  const endpoint = `/profile/change-password`
+
+  return callApi(endpoint, 'PATCH', body)
+}
