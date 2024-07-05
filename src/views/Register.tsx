@@ -90,7 +90,7 @@ const Register = ({ mode }: { mode: SystemMode }) => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
-  const createInvoice = (formData: FormData) => {
+  const signUp = (formData: FormData) => {
 
     const rawFormData = {
       username: formData.get('username'),
@@ -104,9 +104,6 @@ const Register = ({ mode }: { mode: SystemMode }) => {
     }).catch((err) => {
       console.log("🚀 ~ SignUp ~ err:", err)
     });
-
-    // mutate data
-    // revalidate cache
   }
 
   const [policy, setPolicy] = useState(true);
@@ -140,7 +137,7 @@ const Register = ({ mode }: { mode: SystemMode }) => {
             <Typography variant='h4'>Adventure starts here 🚀</Typography>
             <Typography>Make your app management easy and fun!</Typography>
           </div>
-          <form noValidate autoComplete='off' action={createInvoice} className='flex flex-col gap-6'>
+          <form noValidate autoComplete='off' action={signUp} className='flex flex-col gap-6'>
             <CustomTextField autoFocus fullWidth name='username' label='Username' placeholder='Enter your username' />
             <CustomTextField fullWidth name='email' label='Email' placeholder='Enter your email' />
             <CustomTextField

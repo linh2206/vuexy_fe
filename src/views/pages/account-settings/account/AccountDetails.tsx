@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ChangeEvent } from 'react'
 
 // MUI Imports
@@ -15,7 +15,12 @@ import Chip from '@mui/material/Chip'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
 // Component Imports
+import Alert from '@mui/material/Alert';
+
 import CustomTextField from '@core/components/mui/TextField'
+import { Profile } from '@/services/swr/profile.swr'
+import { UpdateProfile } from '@/services/apis/user.api'
+
 
 type Data = {
   firstName: string
@@ -33,28 +38,32 @@ type Data = {
 }
 
 // Vars
-const initialData: Data = {
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  organization: 'Pixinvent',
-  phoneNumber: '+1 (917) 543-9876',
-  address: '123 Main St, New York, NY 10001',
-  state: 'New York',
-  zipCode: '634880',
-  country: 'usa',
-  language: 'english',
-  timezone: 'gmt-12',
-  currency: 'usd'
-}
+// const initialData: Data = {
+//   firstName: 'John',
+//   lastName: 'Doe',
+//   email: 'john.doe@example.com',
+//   organization: 'Pixinvent',
+//   phoneNumber: '+1 (917) 543-9876',
+//   address: '123 Main St, New York, NY 10001',
+//   state: 'New York',
+//   zipCode: '634880',
+//   country: 'usa',
+//   language: 'english',
+//   timezone: 'gmt-12',
+//   currency: 'usd'
+// }
 
 const languageData = ['English', 'Arabic', 'French', 'German', 'Portuguese']
 
 const AccountDetails = () => {
   // States
-  const [formData, setFormData] = useState<Data>(initialData)
+  const [formData, setFormData] = useState<any>({})
+
+  console.log("🚀 ~ AccountDetails ~ formData:", formData)
   const [fileInput, setFileInput] = useState<string>('')
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+
+  console.log("🚀 ~ AccountDetails ~ imgSrc:", imgSrc)
   const [language, setLanguage] = useState<string[]>(['English'])
 
   const handleDelete = (value: string) => {
@@ -88,11 +97,51 @@ const AccountDetails = () => {
     setImgSrc('/images/avatars/1.png')
   }
 
+
+  const { data } = Profile();
+
+  useEffect(() => {
+    setFormData(data?.data)
+  }, [data]);
+
+  const updateProfile = (formData: FormData) => {
+
+    const rawFormData = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      organization: formData.get('organization'),
+      phone: formData.get('phone'),
+      email: formData.get('email'),
+      address: formData.get('address'),
+      state: formData.get('state'),
+      country: formData.get('country'),
+      zipCode: formData.get('zipCode'),
+      language: formData.get('language'),
+
+      // avatar: formData.get(""),
+    }
+
+    console.log("🚀 ~ updateProfile ~ rawFormData:", rawFormData)
+
+    UpdateProfile(rawFormData).then(() => {
+      return (
+        <Alert severity="success">
+          Edit that your action was successful.
+        </Alert>
+      )
+    }).catch((err) => {
+      console.log("🚀 ~ SignUp ~ err:", err)
+    });
+  }
+
   return (
     <Card>
+      <Alert severity="success" style={{ marginBottom: "10px" }}>
+        Edit that your action was successful.
+      </Alert>
       <CardContent className='mbe-4'>
         <div className='flex max-sm:flex-col items-center gap-6'>
-          <img height={100} width={100} className='rounded' src={imgSrc} alt='Profile' />
+          <img height={100} width={100} className='rounded' src={process.env.NEXT_PUBLIC_BE_URL + data?.data.avatar} alt='Profile' />
           <div className='flex flex-grow flex-col gap-4'>
             <div className='flex flex-col sm:flex-row gap-4'>
               <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>
@@ -115,14 +164,14 @@ const AccountDetails = () => {
         </div>
       </CardContent>
       <CardContent>
-        <form onSubmit={e => e.preventDefault()}>
+        <form action={updateProfile}>
           <Grid container spacing={6}>
             <Grid item xs={12} sm={6}>
               <CustomTextField
                 fullWidth
                 label='First Name'
-                value={formData.firstName}
-                placeholder='John'
+                value={formData?.firstName}
+                name='firstName'
                 onChange={e => handleFormChange('firstName', e.target.value)}
               />
             </Grid>
@@ -130,8 +179,8 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='Last Name'
-                value={formData.lastName}
-                placeholder='Doe'
+                value={formData?.lastName}
+                name='lastName'
                 onChange={e => handleFormChange('lastName', e.target.value)}
               />
             </Grid>
@@ -139,8 +188,8 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='Email'
-                value={formData.email}
-                placeholder='john.doe@gmail.com'
+                value={formData?.email}
+                name='email'
                 onChange={e => handleFormChange('email', e.target.value)}
               />
             </Grid>
@@ -148,8 +197,8 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='Organization'
-                value={formData.organization}
-                placeholder='Pixinvent'
+                value={formData?.organization}
+                name='organization'
                 onChange={e => handleFormChange('organization', e.target.value)}
               />
             </Grid>
@@ -157,8 +206,8 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='Phone Number'
-                value={formData.phoneNumber}
-                placeholder='+1 (234) 567-8901'
+                value={formData?.phoneNumber}
+                name='phone'
                 onChange={e => handleFormChange('phoneNumber', e.target.value)}
               />
             </Grid>
@@ -166,8 +215,8 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='Address'
-                value={formData.address}
-                placeholder='Address'
+                value={formData?.address}
+                name='address'
                 onChange={e => handleFormChange('address', e.target.value)}
               />
             </Grid>
@@ -175,8 +224,8 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='State'
-                value={formData.state}
-                placeholder='New York'
+                value={formData?.state}
+                name='state'
                 onChange={e => handleFormChange('state', e.target.value)}
               />
             </Grid>
@@ -185,8 +234,8 @@ const AccountDetails = () => {
                 fullWidth
                 type='number'
                 label='Zip Code'
-                value={formData.zipCode}
-                placeholder='123456'
+                value={formData?.zipCode}
+                name='zipCode'
                 onChange={e => handleFormChange('zipCode', e.target.value)}
               />
             </Grid>
@@ -195,7 +244,8 @@ const AccountDetails = () => {
                 select
                 fullWidth
                 label='Country'
-                value={formData.country}
+                value={formData?.country}
+                name='country'
                 onChange={e => handleFormChange('country', e.target.value)}
               >
                 <MenuItem value='usa'>USA</MenuItem>
@@ -210,6 +260,7 @@ const AccountDetails = () => {
                 fullWidth
                 label='Language'
                 value={language}
+                name='language'
                 SelectProps={{
                   multiple: true, // @ts-ignore
                   onChange: handleChange,
@@ -236,7 +287,7 @@ const AccountDetails = () => {
                 ))}
               </CustomTextField>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            {/* <Grid item xs={12} sm={6}>
               <CustomTextField
                 select
                 fullWidth
@@ -277,14 +328,14 @@ const AccountDetails = () => {
                 <MenuItem value='pound'>Pound</MenuItem>
                 <MenuItem value='bitcoin'>Bitcoin</MenuItem>
               </CustomTextField>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} className='flex gap-4 flex-wrap'>
               <Button variant='contained' type='submit'>
                 Save Changes
               </Button>
-              <Button variant='tonal' type='reset' color='secondary' onClick={() => setFormData(initialData)}>
+              {/* <Button variant='tonal' type='reset' color='secondary' onClick={() => setFormData()}>
                 Reset
-              </Button>
+              </Button> */}
             </Grid>
           </Grid>
         </form>

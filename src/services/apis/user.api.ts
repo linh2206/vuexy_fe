@@ -17,3 +17,9 @@ export const LogOut = () => {
 
   return callApi(endpoint, 'POST', null)
 }
+
+export const UpdateProfile = (body: any) => {
+  const endpoint = `/profile`
+
+  return callApi(endpoint, 'PATCH', body)
+}

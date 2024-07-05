@@ -56,8 +56,6 @@ const UserDropdown = () => {
   const router = useRouter()
 
   const { data, mutate } = Profile();
-
-  console.log("🚀 ~ UserDropdown ~ data:", data)
   const { settings } = useSettings()
   const { lang: locale } = useParams()
 
@@ -94,7 +92,6 @@ const UserDropdown = () => {
     }
   }
 
-
   return (
     <>
       <Badge
@@ -107,8 +104,7 @@ const UserDropdown = () => {
         <Avatar
           ref={anchorRef}
           alt={data?.data?.name || ''}
-
-          // src={session?.user?.image || ''}
+          src={process.env.NEXT_PUBLIC_BE_URL + data?.data?.avatar || ''}
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
         />
@@ -132,10 +128,10 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    {/* <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} /> */}
+                    <Avatar alt={data?.data?.username || ''} src={`${process.env.NEXT_PUBLIC_BE_URL}${data?.data?.avatar}` || ''} />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        {data?.data?.name || ''}
+                        {data?.data?.username || ''}
                       </Typography>
                       <Typography variant='caption'>{data?.data?.email || ''}</Typography>
                     </div>
