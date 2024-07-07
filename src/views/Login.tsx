@@ -215,7 +215,7 @@ const Login = ({ mode }: { mode: SystemMode }) => {
 
   const handleGoogle = async (event: any) => {
     event.preventDefault();
-    window.location.href = `http://51.79.134.236/auth/google`;
+    window.location.href = `${process.env.NEXT_PUBLIC_BE_URL}/auth/google`;
   };
 
   return (
