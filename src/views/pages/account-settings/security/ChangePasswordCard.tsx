@@ -26,7 +26,9 @@ import CustomTextField from '@core/components/mui/TextField'
 import { UpdatePassword } from '@/services/apis/user.api'
 
 import 'react-toastify/dist/ReactToastify.css';
+// eslint-disable-next-line import/order
 import Cookies from 'js-cookie'
+
 // eslint-disable-next-line import/no-unresolved
 import Config from '@/@core/configs'
 

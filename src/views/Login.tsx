@@ -132,6 +132,7 @@ const Login = ({ mode }: { mode: SystemMode }) => {
       Cookies.set(accessTokenKey, (searchParams.get('token') || ''));
 
       const redirectURL = searchParams.get('redirectTo') ?? '/'
+
       router.replace(getLocalizedUrl(redirectURL, locale as Locale))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
