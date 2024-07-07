@@ -103,7 +103,7 @@ const UserDropdown = () => {
       >
         <Avatar
           ref={anchorRef}
-          alt={data?.data?.name || ''}
+          alt={data?.data?.username || ''}
           src={process.env.NEXT_PUBLIC_BE_URL + data?.data?.avatar || ''}
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
