@@ -4,10 +4,8 @@
 import { useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
 
-// Next Imports
 import { useParams, useRouter } from 'next/navigation'
 
-// MUI Imports
 import { styled } from '@mui/material/styles'
 import Badge from '@mui/material/Badge'
 import Avatar from '@mui/material/Avatar'
@@ -21,7 +19,6 @@ import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 
-// Type Imports
 import Cookies from 'js-cookie'
 
 import type { Locale } from '@configs/i18n'
