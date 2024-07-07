@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { use, useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
 
 // Next Imports
@@ -27,12 +27,17 @@ import Cookies from 'js-cookie'
 import type { Locale } from '@configs/i18n'
 
 // Hook Imports
+// eslint-disable-next-line import/no-unresolved
 import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
+// eslint-disable-next-line import/no-unresolved
 import { getLocalizedUrl } from '@/utils/i18n'
+// eslint-disable-next-line import/no-unresolved
 import { LogOut } from '@/services/apis/user.api'
+// eslint-disable-next-line import/no-unresolved
 import { Profile } from '@/services/swr/profile.swr'
+// eslint-disable-next-line import/no-unresolved
 import Config from '@/@core/configs'
 
 // Styled component for badge content

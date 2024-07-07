@@ -35,6 +35,12 @@ import type { SystemMode } from '@core/types'
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 
+import Grid from '@mui/material/Grid'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 
@@ -43,7 +49,6 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
-import {Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material'
 import { toast, Bounce } from 'react-toastify'
 import type { Locale } from '@/configs/i18n'
 
@@ -51,8 +56,6 @@ import { SignIn, UpdatePassword } from '@/services/apis/user.api'
 
 import Config from '@/@core/configs'
 import { getLocalizedUrl } from '@/utils/i18n'
-
-import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
