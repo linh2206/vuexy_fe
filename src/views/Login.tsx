@@ -35,12 +35,6 @@ import type { SystemMode } from '@core/types'
 import Logo from '@components/layout/shared/Logo'
 import CustomTextField from '@core/components/mui/TextField'
 
-import Grid from '@mui/material/Grid'
-import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 
@@ -49,10 +43,9 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
-import { toast, Bounce } from 'react-toastify'
 import type { Locale } from '@/configs/i18n'
 
-import { SignIn, UpdatePassword } from '@/services/apis/user.api'
+import { SignIn } from '@/services/apis/user.api'
 
 import Config from '@/@core/configs'
 import { getLocalizedUrl } from '@/utils/i18n'
@@ -131,14 +124,15 @@ const Login = ({ mode }: { mode: SystemMode }) => {
   )
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('token')) {
       const accessTokenKey = Config.Env.NEXT_PUBLIC_X_ACCESS_TOKEN as string;
 
       Cookies.set(accessTokenKey, (searchParams.get('token') || ''));
-      setOpen(true);
+
+      const redirectURL = searchParams.get('redirectTo') ?? '/'
+      router.replace(getLocalizedUrl(redirectURL, locale as Locale))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
@@ -159,58 +153,6 @@ const Login = ({ mode }: { mode: SystemMode }) => {
     }).catch(() => {
       setErrorState('Wrong email or password')
     });
-  }
-
-  const [passwordReq, setPasswordReq] = useState<any>({});
-
-  const updatePassword = () => {
-    if ((passwordReq.password !== passwordReq.rePassword)) {
-      toast.error(('Password does not match'), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
-      })
-    } else {
-      UpdatePassword({
-        token: Cookies.get(Config.Env.NEXT_PUBLIC_X_ACCESS_TOKEN),
-        password: passwordReq.rePassword
-      }).then(() => {
-        toast.success('update password success', {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        })
-
-        const redirectURL = searchParams.get('redirectTo') ?? '/'
-
-        router.replace(getLocalizedUrl(redirectURL, locale as Locale))
-        setOpen(false)
-      }).catch((err) => {
-        toast.error((err?.response?.data?.message || ""), {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        })
-      })
-    }
   }
 
   const handleGoogle = async (event: any) => {
@@ -338,57 +280,6 @@ const Login = ({ mode }: { mode: SystemMode }) => {
           </form>
         </div>
       </div>
-      <Dialog
-        fullWidth
-        open={open}
-
-        // onClose={handleClose}
-        maxWidth='md'
-        scroll='body'
-        sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
-      >
-        <DialogTitle variant='h4' className='flex gap-2 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
-          Edit User Information
-          <Typography component='span' className='flex flex-col text-center'>
-            Updating user details will receive a privacy audit.
-          </Typography>
-        </DialogTitle>
-        <form action={updatePassword}>
-          <DialogContent className='overflow-visible pbs-0 sm:pli-16'>
-            <Grid container spacing={5}>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  fullWidth
-                  name='password'
-                  label='Password'
-                  placeholder='.........'
-                  type='password'
-                  onChange={e => setPasswordReq({ ...passwordReq, password: e.target.value })}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomTextField
-                  fullWidth
-                  name='rePassword'
-                  label='Re-enter the password'
-                  placeholder='.........'
-                  type='password'
-
-                  onChange={e => setPasswordReq({ ...passwordReq, rePassword: e.target.value })}
-                />
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions className='justify-center pbs-0 sm:pbe-16 sm:pli-16'>
-            <Button variant='contained' type='submit'>
-              Submit
-            </Button>
-            {/* <Button variant='tonal' color='secondary' type='reset' onClick={handleClose}> */}
-            {/* Cancel */}
-            {/* </Button> */}
-          </DialogActions>
-        </form>
-      </Dialog>
     </div>
   )
 }

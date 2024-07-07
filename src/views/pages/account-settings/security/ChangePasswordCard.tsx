@@ -19,11 +19,16 @@ import Button from '@mui/material/Button'
 import { Bounce, toast } from 'react-toastify'
 
 //Component Imports
+// eslint-disable-next-line import/no-unresolved
 import CustomTextField from '@core/components/mui/TextField'
 
-import { ResetPassword } from '@/services/apis/user.api'
+// eslint-disable-next-line import/no-unresolved
+import { UpdatePassword } from '@/services/apis/user.api'
 
 import 'react-toastify/dist/ReactToastify.css';
+import Cookies from 'js-cookie'
+// eslint-disable-next-line import/no-unresolved
+import Config from '@/@core/configs'
 
 const ChangePasswordCard = () => {
   // States
@@ -31,6 +36,7 @@ const ChangePasswordCard = () => {
   const [isConfirmPasswordShown, setIsConfirmPasswordShown] = useState(false)
   const [isNewPasswordShown, setIsNewPasswordShown] = useState(false)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleClickShowCurrentPassword = () => {
     setIsCurrentPasswordShown(!isCurrentPasswordShown)
   }
@@ -40,12 +46,11 @@ const ChangePasswordCard = () => {
     handleSubmit,
     reset,
     formState: { }
-  } = useForm<any>()
+  } = useForm({ defaultValues: { password: '', confirm_password: '' } })
 
-  const HandleChangePassword = (formData: FormData) => {
-
-    ResetPassword(formData).then(() => {
-      toast.success('Edit password success', {
+  const HandleChangePassword = (formData: any) => {
+    if ((formData.password !== formData.confirm_password)) {
+      toast.error(('Password does not match'), {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -56,24 +61,40 @@ const ChangePasswordCard = () => {
         theme: "dark",
         transition: Bounce,
       })
-      reset({
-        old_password: "",
-        new_password: "",
-        confirm_password: "",
+    } else {
+      UpdatePassword({
+        token: Cookies.get(Config.Env.NEXT_PUBLIC_X_ACCESS_TOKEN),
+        password: formData.confirm_password
+      }).then(() => {
+        toast.success('update password success', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        })
+        reset({
+          password: '',
+          confirm_password: "",
+        })
+      }).catch((err) => {
+        toast.error((err?.response?.data?.message || ""), {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        })
       })
-    }).catch((err) => {
-      toast.error((err?.response?.data?.message[0] || ""), {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-        transition: Bounce,
-      })
-    });
+    }
   }
 
 
@@ -82,47 +103,15 @@ const ChangePasswordCard = () => {
       <CardHeader title='Change Password' />
       <CardContent>
         <form onSubmit={handleSubmit(HandleChangePassword)}>
-          <Grid container spacing={6}>
-            <Grid item xs={12} sm={6}>
-              <Controller
-                name='old_password'
-                control={control}
-                render={({ field }) => (
-                  <CustomTextField
-                    fullWidth
-                    label='Current Password'
-                    type={isCurrentPasswordShown ? 'text' : 'password'}
-                    placeholder='············'
-                    {
-                    ...field
-                    }
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position='end'>
-                          <IconButton
-                            edge='end'
-                            onClick={handleClickShowCurrentPassword}
-                            onMouseDown={e => e.preventDefault()}
-                          >
-                            <i className={isCurrentPasswordShown ? 'tabler-eye-off' : 'tabler-eye'} />
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-          </Grid>
           <Grid container className='mbs-0' spacing={6}>
             <Grid item xs={12} sm={6}>
               <Controller
-                name='new_password'
+                name='password'
                 control={control}
                 render={({ field }) => (
                   <CustomTextField
                     fullWidth
-                    label='New Password'
+                    label='Password'
                     {
                     ...field
                     }
@@ -152,7 +141,7 @@ const ChangePasswordCard = () => {
                 render={({ field }) => (
                   <CustomTextField
                     fullWidth
-                    label='Confirm New Password'
+                    label='Confirm Password'
                     type={isConfirmPasswordShown ? 'text' : 'password'}
                     placeholder='············'
                     {
