@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
@@ -45,8 +45,12 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
-import { SignIn } from '@/services/apis/user.api'
+import { SignIn, UpdatePassword } from '@/services/apis/user.api'
 import Config from '@/@core/configs'
+import { Box, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, MenuItem, Modal, Switch } from '@mui/material'
+import { toast, Bounce } from 'react-toastify'
+
+import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -122,6 +126,17 @@ const Login = ({ mode }: { mode: SystemMode }) => {
   )
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('token')) {
+      const accessTokenKey = Config.Env.NEXT_PUBLIC_X_ACCESS_TOKEN as string;
+
+      Cookies.set(accessTokenKey, (searchParams.get('token') || ''));
+      setOpen(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
     await SignIn({
@@ -132,6 +147,7 @@ const Login = ({ mode }: { mode: SystemMode }) => {
       const accessTokenKey = Config.Env.NEXT_PUBLIC_X_ACCESS_TOKEN as string;
 
       Cookies.set(accessTokenKey, token);
+
       const redirectURL = searchParams.get('redirectTo') ?? '/'
 
       router.replace(getLocalizedUrl(redirectURL, locale as Locale))
@@ -139,6 +155,63 @@ const Login = ({ mode }: { mode: SystemMode }) => {
       setErrorState('Wrong email or password')
     });
   }
+
+  const [passwordReq, setPasswordReq] = useState<any>({});
+
+  const updatePassword = () => {
+    if ((passwordReq.password !== passwordReq.rePassword)) {
+      toast.error(('Password does not match'), {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      })
+    } else {
+      UpdatePassword({
+        token: Cookies.get(Config.Env.NEXT_PUBLIC_X_ACCESS_TOKEN),
+        password: passwordReq.rePassword
+      }).then(() => {
+        toast.success('update password success', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        })
+
+        const redirectURL = searchParams.get('redirectTo') ?? '/'
+
+        router.replace(getLocalizedUrl(redirectURL, locale as Locale))
+        setOpen(false)
+      }).catch((err) => {
+        toast.error((err?.response?.data?.message || ""), {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+        })
+      })
+    }
+  }
+
+  const handleGoogle = async (event: any) => {
+    event.preventDefault();
+    window.location.href = `${process.env.NEXT_PUBLIC_BE_URL}/auth/google`;
+  };
 
   return (
     <div className='flex bs-full justify-center'>
@@ -253,14 +326,64 @@ const Login = ({ mode }: { mode: SystemMode }) => {
               className='self-center text-textPrimary'
               startIcon={<img src='/images/logos/google.png' alt='Google' width={22} />}
               sx={{ '& .MuiButton-startIcon': { marginInlineEnd: 3 } }}
-
-            // onClick={ }
+              onClick={e => handleGoogle(e)}
             >
               Sign in with Google
             </Button>
           </form>
         </div>
       </div>
+      <Dialog
+        fullWidth
+        open={open}
+
+        // onClose={handleClose}
+        maxWidth='md'
+        scroll='body'
+        sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
+      >
+        <DialogTitle variant='h4' className='flex gap-2 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
+          Edit User Information
+          <Typography component='span' className='flex flex-col text-center'>
+            Updating user details will receive a privacy audit.
+          </Typography>
+        </DialogTitle>
+        <form action={updatePassword}>
+          <DialogContent className='overflow-visible pbs-0 sm:pli-16'>
+            <Grid container spacing={5}>
+              <Grid item xs={12} sm={6}>
+                <CustomTextField
+                  fullWidth
+                  name='password'
+                  label='Password'
+                  placeholder='.........'
+                  type='password'
+                  onChange={e => setPasswordReq({ ...passwordReq, password: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CustomTextField
+                  fullWidth
+                  name='rePassword'
+                  label='Re-enter the password'
+                  placeholder='.........'
+                  type='password'
+
+                  onChange={e => setPasswordReq({ ...passwordReq, rePassword: e.target.value })}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions className='justify-center pbs-0 sm:pbe-16 sm:pli-16'>
+            <Button variant='contained' type='submit'>
+              Submit
+            </Button>
+            {/* <Button variant='tonal' color='secondary' type='reset' onClick={handleClose}> */}
+            {/* Cancel */}
+            {/* </Button> */}
+          </DialogActions>
+        </form>
+      </Dialog>
     </div>
   )
 }

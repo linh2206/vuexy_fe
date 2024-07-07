@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
 
 // Next Imports
@@ -59,6 +59,7 @@ const UserDropdown = () => {
   const { settings } = useSettings()
   const { lang: locale } = useParams()
 
+
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
   }
@@ -74,6 +75,7 @@ const UserDropdown = () => {
 
     setOpen(false)
   }
+
 
   const handleUserLogout = async () => {
     try {
@@ -177,3 +179,4 @@ const UserDropdown = () => {
 }
 
 export default UserDropdown
+

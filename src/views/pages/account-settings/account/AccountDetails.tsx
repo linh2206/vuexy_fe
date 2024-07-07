@@ -18,6 +18,7 @@ import type { SelectChangeEvent } from '@mui/material/Select'
 import { toast, Bounce } from 'react-toastify'
 
 import CustomTextField from '@core/components/mui/TextField'
+
 import { Profile } from '@/services/swr/profile.swr'
 import { UpdateProfile, UploadAvatar } from '@/services/apis/user.api'
 import 'react-toastify/dist/ReactToastify.css';
@@ -93,68 +94,78 @@ const AccountDetails = () => {
   }
 
   const handleFileInputReset = () => {
-    setFileInput('')
+    setImgSrc('')
   }
 
 
-  const { data } = Profile();
+  const { data, mutate } = Profile();
 
   useEffect(() => {
     setFormData(data?.data)
   }, [data]);
 
-  const updateProfile = (formData: FormData) => {
+  const updateProfile = async (formData: FormData) => {
+
     const formDataUpload = new FormData();
 
     formDataUpload.append('file', file);
-    UploadAvatar(formDataUpload).then((res) => {
-      const rawFormData = {
-        firstName: formData.get('firstName'),
-        lastName: formData.get('lastName'),
-        organization: formData.get('organization'),
-        phone: formData.get('phone'),
-        email: formData.get('email'),
-        address: formData.get('address'),
-        state: formData.get('state'),
-        country: formData.get('country'),
-        zipCode: formData.get('zipCode'),
-        language: formData.get('language'),
-        avatar: res.data.path,
-      }
 
-      UpdateProfile(rawFormData).then(() => {
-        toast.success('Edit profile success', {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        })
-      }).catch((err) => {
-        toast.error((err?.response?.data?.message || ""), {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Bounce,
-        })
-      });
-    })
+    const rawFormData: any = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      organization: formData.get('organization'),
+      phone: formData.get('phone'),
+      email: formData.get('email'),
+      address: formData.get('address'),
+      state: formData.get('state'),
+      country: formData.get('country'),
+      zipCode: formData.get('zipCode'),
+      language: formData.get('language'),
+    }
+
+    if (file) {
+      await UploadAvatar(formDataUpload).then((res) => {
+        rawFormData.avatar = res.data.path
+      })
+    }
+
+    updateDataProfile({ ...rawFormData })
+  }
+
+  const updateDataProfile = (rawFormData: any) => {
+    UpdateProfile(rawFormData).then(() => {
+      toast.success('Edit profile success', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      })
+      mutate();
+    }).catch((err) => {
+      toast.error((err?.response?.data?.message || ""), {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      })
+    });
   }
 
   return (
     <Card>
       <CardContent className='mbe-4'>
         <div className='flex max-sm:flex-col items-center gap-6'>
-          <img height={100} width={100} className='rounded' src={imgSrc ?? process.env.NEXT_PUBLIC_BE_URL + data?.data.avatar} alt='Profile' />
+          <img height={100} width={100} className='rounded' src={imgSrc ? imgSrc : data?.data?.avatar ? (process.env.NEXT_PUBLIC_BE_URL + data?.data?.avatar) : '/images/avatars/1.png'} alt='Profile' />
           <div className='flex flex-grow flex-col gap-4'>
             <div className='flex flex-col sm:flex-row gap-4'>
               <Button component='label' variant='contained' htmlFor='account-settings-upload-image'>

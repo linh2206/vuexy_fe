@@ -35,3 +35,9 @@ export const ResetPassword = (body: any) => {
 
   return callApi(endpoint, 'PATCH', body)
 }
+
+export const UpdatePassword = (body: any) => {
+  const endpoint = `/profile/reset-password`
+
+  return callApi(endpoint, 'PATCH', body)
+}
