@@ -107,8 +107,8 @@ const UserDropdown = () => {
       >
         <Avatar
           ref={anchorRef}
-          alt={data?.data?.username || ''}
-          src={process.env.NEXT_PUBLIC_BE_URL + data?.data?.avatar || ''}
+          alt={data?.data?.username || data?.data?.gmail || ''}
+          src={data?.data?.avatar ? process.env.NEXT_PUBLIC_BE_URL + data?.data?.avatar : ''}
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
         />
@@ -132,10 +132,10 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    <Avatar alt={data?.data?.username || ''} src={`${process.env.NEXT_PUBLIC_BE_URL}${data?.data?.avatar}` || ''} />
+                    <Avatar alt={data?.data?.username || data?.data?.gmail || ''} src={data?.data?.avatar ? `${process.env.NEXT_PUBLIC_BE_URL}${data?.data?.avatar}` : ''} />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        {data?.data?.username || ''}
+                        {data?.data?.username || data?.data?.firstName || ''}
                       </Typography>
                       <Typography variant='caption'>{data?.data?.email || ''}</Typography>
                     </div>
