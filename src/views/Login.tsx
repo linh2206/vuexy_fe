@@ -30,7 +30,6 @@ import classnames from 'classnames'
 import Cookies from 'js-cookie'
 
 import type { SystemMode } from '@core/types'
-import type { Locale } from '@/configs/i18n'
 
 // Component Imports
 import Logo from '@components/layout/shared/Logo'
@@ -44,11 +43,14 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
-import { getLocalizedUrl } from '@/utils/i18n'
-import { SignIn, UpdatePassword } from '@/services/apis/user.api'
-import Config from '@/@core/configs'
-import { Box, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, MenuItem, Modal, Switch } from '@mui/material'
+import {Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material'
 import { toast, Bounce } from 'react-toastify'
+import type { Locale } from '@/configs/i18n'
+
+import { SignIn, UpdatePassword } from '@/services/apis/user.api'
+
+import Config from '@/@core/configs'
+import { getLocalizedUrl } from '@/utils/i18n'
 
 import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
 

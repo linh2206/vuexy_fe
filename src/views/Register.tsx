@@ -22,23 +22,23 @@ import classnames from 'classnames'
 
 // Type Imports
 import { Bounce, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import type { SystemMode } from '@core/types'
 import type { Locale } from '@configs/i18n'
 
-// Component Imports
-import Logo from '@components/layout/shared/Logo'
-import CustomTextField from '@core/components/mui/TextField'
-
-// Hook Imports
-import { useImageVariant } from '@core/hooks/useImageVariant'
-import { useSettings } from '@core/hooks/useSettings'
-
-// Util Imports
-import { getLocalizedUrl } from '@/utils/i18n'
+// eslint-disable-next-line import/no-unresolved
+import { useSettings } from '@/@core/hooks/useSettings'
+// eslint-disable-next-line import/no-unresolved
+import { useImageVariant } from '@/@core/hooks/useImageVariant'
+// eslint-disable-next-line import/no-unresolved
 import { SignUp } from '@/services/apis/user.api'
-
-import 'react-toastify/dist/ReactToastify.css';
+// eslint-disable-next-line import/no-unresolved
+import { getLocalizedUrl } from '@/utils/i18n'
+// eslint-disable-next-line import/no-unresolved
+import Logo from '@/@core/svg/Logo'
+// eslint-disable-next-line import/no-unresolved
+import CustomTextField from '@/@core/components/mui/TextField'
 
 
 // Styled Custom Components
